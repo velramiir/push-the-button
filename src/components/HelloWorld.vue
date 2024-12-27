@@ -1,4 +1,14 @@
 <script setup lang="ts">
+import { useQuery } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
+const { result, error } = useQuery(gql`
+  query Back4App {
+        health,
+        room(id: "") {
+          code
+        }
+      }
+`);
 defineProps<{
   msg: string
 }>()
@@ -7,10 +17,11 @@ defineProps<{
 <template>
   <div class="greetings">
     <h1 class="green">{{ msg }}</h1>
-    <h3>
-      You’ve successfully created a project with
-      <a href="https://vitejs.dev/" target="_blank" rel="noopener">Vite</a> +
-      <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>.
+    <h3 v-if="result">
+      {{ result.room.code }}
+    </h3>
+    <h3 v-else-if="error">
+      {{ error.message }}
     </h3>
   </div>
 </template>

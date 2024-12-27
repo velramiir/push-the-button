@@ -12,6 +12,10 @@
     }
   ],
   "compilerOptions": {
-    "types": ["naive-ui/volar"]
+    "types": ["naive-ui/volar"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
   }
 }
