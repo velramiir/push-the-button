@@ -1,12 +1,12 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
+  <header class="flex flex-row justify-center my-2">
+    <n-image src="banner.png">
+      <template #error>
+        <n-icon size="50px">
+          <Alien />
+        </n-icon>
+      </template>
+    </n-image>
   </header>
 
   <main>
@@ -14,31 +14,6 @@ import HelloWorld from './components/HelloWorld.vue'
   </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+<script setup lang="ts">
+import { Alien } from '@vicons/tabler'
+</script>

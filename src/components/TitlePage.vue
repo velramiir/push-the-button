@@ -1,11 +1,5 @@
 <template>
   <div class="page">
-    <div class="title-container">
-      <n-icon size="50px">
-        <Alien />
-      </n-icon>
-      <h1>Push the Button</h1>
-    </div>
     <n-card title="Me" size="medium">
       <n-form
         v-if="!playerId"
