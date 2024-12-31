@@ -32,11 +32,7 @@
 import { NIcon, NCard, NForm, NFormItem, NInput, NButton } from 'naive-ui'
 import { Alien } from '@vicons/tabler'
 import { ref } from 'vue'
-import { useMutation } from '@vue/apollo-composable'
-import gql from 'graphql-tag'
-import type { Mutation } from '@/types/gql/graphql'
 import { storageKey } from '@/storage-keys'
-import type { FetchResult } from '@apollo/client'
 import PlayerCard from '@/components/PlayerCard.vue'
 
 const playerId = ref(getPlayerId())
@@ -63,26 +59,13 @@ function setPlayerId(newPlayerId: string | null) {
   } else {
     localStorage.setItem(storageKey.playerId, newPlayerId)
   }
-  playerId.value = newPlayerId;
+  playerId.value = newPlayerId
 }
 
-const { mutate: createPlayer } = useMutation(gql`
-  mutation TitlePageCreatePlayer($name: String!) {
-    createPlayer(input: { fields: { name: $name } }) {
-      player {
-        id
-      }
-    }
-  }
-`)
-
 async function handleJoin() {
-  const result: FetchResult<Mutation> | null = await createPlayer({ name: formValue.value.name })
-  if (!result?.data?.createPlayer) {
-    throw new Error('Player creation failed.')
-  }
-  setPlayerId(result.data.createPlayer.player.id)
-  formValue.value.name = ''
+  throw new Error('Player creation failed.')
+  // setPlayerId(result.data.createPlayer.player.id)
+  // formValue.value.name = ''
 }
 </script>
 
