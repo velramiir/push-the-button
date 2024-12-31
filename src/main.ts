@@ -3,7 +3,7 @@ import routes from '@/routes/routes'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import naiveUi from 'naive-ui'
 
-import './assets/main.css'
+import './assets/index.css'
 import App from './App.vue'
 
 const parseAppId = import.meta.env.VITE_PARSE_APPLICATION_ID
