@@ -29,7 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import { NIcon, NCard, NForm, NFormItem, NInput, NButton } from 'naive-ui'
 import { Alien } from '@vicons/tabler'
 import { ref } from 'vue'
 import { storageKey } from '@/storage-keys'

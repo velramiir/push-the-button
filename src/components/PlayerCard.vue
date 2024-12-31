@@ -18,7 +18,6 @@
 </template>
 
 <script setup lang="ts">
-import { NCard, NP, NTag, NSpin } from 'naive-ui'
 import Avatar from 'vue-boring-avatars'
 import { computed } from 'vue'
 

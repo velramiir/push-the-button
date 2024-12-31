@@ -1,10 +1,10 @@
-import './assets/main.css'
-
 import { createApp } from 'vue'
-import App from './App.vue'
 import routes from '@/routes/routes'
-
 import { createRouter, createWebHashHistory } from 'vue-router'
+import naiveUi from 'naive-ui'
+
+import './assets/main.css'
+import App from './App.vue'
 
 const parseAppId = import.meta.env.VITE_PARSE_APPLICATION_ID
 const parseClientKey = import.meta.env.VITE_PARSE_CLIENT_KEY
@@ -19,4 +19,5 @@ const router = createRouter({
 })
 
 app.use(router)
+app.use(naiveUi)
 app.mount('#app')
