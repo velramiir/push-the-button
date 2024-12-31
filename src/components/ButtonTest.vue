@@ -1,14 +1,13 @@
 <template>
-    <n-button @click="increment">Count is {{ count }}</n-button>
+  <n-button @click="increment">Count is {{ count }}</n-button>
 </template>
-  
+
 <script lang="ts" setup>
-    import { ref } from 'vue'
-    import { NButton } from 'naive-ui'
+import { ref } from 'vue'
 
-    const count = ref(0);
+const count = ref(0)
 
-    function increment() {
-        count.value++;
-    }
- </script>
+function increment() {
+  count.value++
+}
+</script>

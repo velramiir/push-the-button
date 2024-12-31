@@ -1,12 +1,12 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue';
-</script>
-
 <template>
-  <header>
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <header class="mb-2">
+    <div class="flex flex-row items-center gap-2 pb-4">
+      <n-icon size="50px">
+        <Alien />
+      </n-icon>
+      <h1>Push the Button</h1>
     </div>
+    <PlayerCard v-model="playerId" @update:modelValue="setPlayerId($event)" />
   </header>
 
   <main>
@@ -14,31 +14,24 @@ import HelloWorld from './components/HelloWorld.vue';
   </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<script setup lang="ts">
+import { Alien } from '@vicons/tabler'
+import PlayerCard from './components/PlayerCard.vue'
+import { ref } from 'vue'
+import { storageKey } from './storage-keys'
+
+const playerId = ref(getPlayerId())
+
+function getPlayerId(): string | undefined {
+  return localStorage.getItem(storageKey.playerId) ?? undefined
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+function setPlayerId(newPlayerId: string | undefined) {
+  if (newPlayerId === undefined) {
+    localStorage.removeItem(storageKey.playerId)
+  } else {
+    localStorage.setItem(storageKey.playerId, newPlayerId)
+  }
+  playerId.value = newPlayerId
 }
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+</script>

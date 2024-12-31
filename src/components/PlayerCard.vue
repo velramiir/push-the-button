@@ -1,56 +1,66 @@
 <template>
-  <n-card embedded :bordered="false" class="player-card">
-    <n-spin :show="!playerName">
-      <Avatar :class="{
-        hidden: !playerName
-      }" :size="40" variant="bauhaus" :name="playerName" />
-    </n-spin>
-    <div>
-      <n-p class="player-name">{{ playerName }}</n-p>
-      <n-tag>Alien</n-tag>
-    </div>
+  <n-card size="medium">
+    <n-form
+      v-if="!playerId"
+      ref="joinForm"
+      inline
+      :label-width="80"
+      :model="formValue"
+      :rules="rules"
+    >
+      <n-form-item label="Name" path="name">
+        <n-input v-model:value="formValue.name" placeholder="Player Name" />
+      </n-form-item>
+      <n-form-item>
+        <n-button @click="handleJoin" :disabled="!formValue.name"> Save </n-button>
+      </n-form-item>
+    </n-form>
+    <PlayerIndicator v-else :playerId="playerId" />
   </n-card>
 </template>
 
 <script setup lang="ts">
-import type { Player } from '@/types/gql/graphql'
-import { useQuery } from '@vue/apollo-composable'
+import type { Mutation } from '@/types/gql/graphql'
+import type { FetchResult } from '@apollo/client'
+import { useMutation } from '@vue/apollo-composable'
 import gql from 'graphql-tag'
-import { NCard, NP, NTag, NSpin } from 'naive-ui'
-import Avatar from 'vue-boring-avatars'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import PlayerIndicator from './PlayerIndicator.vue'
 
-const props = defineProps<{
-  playerId: string
-}>()
+const model = defineModel({ type: String })
 
-const playerQuery = useQuery<{ player: Player }>(
-  gql`
-    query PlayerCardGetPlayer($id: ID!) {
-      player(id: $id) {
+const playerId = computed(() => {
+  return model.value ?? null
+})
+
+const formValue = ref({
+  name: ''
+})
+
+const rules = {
+  name: {
+    required: true,
+    message: 'Please input your name.',
+    trigger: 'blur'
+  }
+}
+
+const { mutate: createPlayer } = useMutation(gql`
+  mutation TitlePageCreatePlayer($name: String!) {
+    createPlayer(input: { fields: { name: $name } }) {
+      player {
         id
-        name
       }
     }
-  `,
-  { id: props.playerId }
-)
+  }
+`)
 
-const playerName = computed(() => playerQuery.result.value?.player.name ?? '')
+async function handleJoin() {
+  const result: FetchResult<Mutation> | null = await createPlayer({ name: formValue.value.name })
+  if (!result?.data?.createPlayer) {
+    throw new Error('Player creation failed.')
+  }
+  model.value = result.data.createPlayer.player.id
+  formValue.value.name = ''
+}
 </script>
-
-<style scoped>
-.player-card:deep(.n-card__content) {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.7rem;
-}
-.player-name {
-  margin: 0;
-}
-
-.hidden {
-    visibility: hidden;
-}
-</style>

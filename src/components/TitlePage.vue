@@ -1,104 +1,76 @@
 <template>
-  <div class="page">
-    <div class="title-container">
-      <n-icon size="50px">
-        <Alien />
-      </n-icon>
-      <h1>Push the Button</h1>
-    </div>
-    <n-card title="Me" size="medium">
-      <n-form
-        v-if="!playerId"
-        ref="joinForm"
-        inline
-        :label-width="80"
-        :model="formValue"
-        :rules="rules"
-      >
-        <n-form-item label="Name" path="name">
-          <n-input v-model:value="formValue.name" placeholder="Player Name" />
-        </n-form-item>
-        <n-form-item>
-          <n-button @click="handleJoin" :disabled="!formValue.name"> Join </n-button>
-        </n-form-item>
-      </n-form>
-      <PlayerCard v-else :playerId="playerId" />
+  <div class="flex flex-col gap-2">
+    <n-card size="medium">
+      <div class="flex flex-col gap-2">
+        <n-button class="flex-grow" @click="navigateToCreate">Create</n-button>
+        <n-button class="flex-grow" @click="navigateToJoin">Join</n-button>
+      </div>
     </n-card>
-    <n-card title="Players" size="medium"> Tonight I'm a rock 'n' roll star </n-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { NIcon, NCard, NForm, NFormItem, NInput, NButton } from 'naive-ui'
-import { Alien } from '@vicons/tabler'
+import { useRouter } from 'vue-router'
+import fetch from 'node-fetch'
 import { ref } from 'vue'
-import { useMutation } from '@vue/apollo-composable'
-import gql from 'graphql-tag'
-import type { Mutation } from '@/types/gql/graphql'
 import { storageKey } from '@/storage-keys'
-import type { FetchResult } from '@apollo/client'
-import PlayerCard from '@/components/PlayerCard.vue'
+
+const parseUrl = import.meta.env.VITE_PARSE_URL
+const parseAppId = import.meta.env.VITE_PARSE_APPLICATION_ID
+const parseClientKey = import.meta.env.VITE_PARSE_CLIENT_KEY
+
+const router = useRouter()
 
 const playerId = ref(getPlayerId())
 
-const formValue = ref({
-  name: ''
-})
-
-const rules = {
-  name: {
-    required: true,
-    message: 'Please input your name.',
-    trigger: 'blur'
-  }
+function getPlayerId(): string | undefined {
+  return localStorage.getItem(storageKey.playerId) ?? undefined
 }
 
-function getPlayerId(): string | null {
-  return localStorage.getItem(storageKey.playerId)
+function navigateToCreate() {
+  router.push('/create')
 }
 
-function setPlayerId(newPlayerId: string | null) {
-  if (newPlayerId === null) {
-    localStorage.removeItem(storageKey.playerId)
-  } else {
-    localStorage.setItem(storageKey.playerId, newPlayerId)
-  }
-  playerId.value = newPlayerId;
+function navigateToJoin() {
+  router.push('/join')
 }
 
-const { mutate: createPlayer } = useMutation(gql`
-  mutation TitlePageCreatePlayer($name: String!) {
-    createPlayer(input: { fields: { name: $name } }) {
-      player {
-        id
-      }
+async function callCreateRoomWithPlayer(playerId: string): Promise<void> {
+  const url = `${parseUrl}/functions/createRoomWithPlayer`
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-Parse-Application-Id': parseAppId,
+        'X-Parse-Client-Key': parseClientKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ playerId })
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`)
     }
-  }
-`)
 
-async function handleJoin() {
-  const result: FetchResult<Mutation> | null = await createPlayer({ name: formValue.value.name })
-  if (!result?.data?.createPlayer) {
-    throw new Error('Player creation failed.')
+    const data = await response.json()
+    console.log('Room creation result:', data)
+  } catch (error) {
+    console.error('Error calling cloud function:', error)
   }
-  setPlayerId(result.data.createPlayer.player.id)
-  formValue.value.name = ''
+}
+
+async function handleCreate() {
+  loading.value = true
+  try {
+    const result = await callCreateRoomWithPlayer()
+    const roomCode = result?.data?.createRoom?.room?.code
+    if (!roomCode) throw new Error('Room creation failed.')
+    router.push(`/room/${roomCode}`)
+  } catch (error) {
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
 }
 </script>
-
-<style scoped>
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-}
-
-.title-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.3rem;
-  font-family: 'Courier New', monospace;
-}
-</style>
