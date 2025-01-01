@@ -13,10 +13,11 @@
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { storageKey } from '@/storage-keys'
+import type { Room } from '@/types/objects'
 
-const parseUrl = import.meta.env.VITE_PARSE_URL
-const parseAppId = import.meta.env.VITE_PARSE_APPLICATION_ID
-const parseClientKey = import.meta.env.VITE_PARSE_CLIENT_KEY
+const PARSE_URL = import.meta.env.VITE_PARSE_URL
+const PARSE_APP_ID = import.meta.env.VITE_PARSE_APPLICATION_ID
+const PARSE_CLIENT_KEY = import.meta.env.VITE_PARSE_CLIENT_KEY
 
 const router = useRouter()
 
@@ -26,11 +27,40 @@ function getPlayerId(): string | undefined {
   return localStorage.getItem(storageKey.playerId) ?? undefined
 }
 
-function handleCreate() {
+async function handleCreate() {
   console.log('create')
+  if (playerId.value) {
+    const room = await createRoomWithPlayer(playerId.value)
+    router.push('/room/' + room.code)
+  }
 }
 
 function navigateToJoin() {
   router.push('/join')
+}
+
+async function createRoomWithPlayer(playerId: string): Promise<Room> {
+  const url = `${PARSE_URL}/functions/createRoomWithPlayer`
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-Parse-Application-Id': PARSE_APP_ID,
+        'X-Parse-Client-Key': PARSE_CLIENT_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ playerId })
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`)
+    }
+
+    const data = await response.json()
+    return data.result as Room
+  } catch (error) {
+    throw new Error(`Error calling cloud function: ${error}`)
+  }
 }
 </script>
