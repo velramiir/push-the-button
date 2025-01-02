@@ -1,6 +1,7 @@
 import { createApp, ref } from 'vue'
 import routes from '@/routes/routes'
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router' // Change this import
+
 import naiveUi from 'naive-ui'
 
 import './assets/index.css'
@@ -15,7 +16,7 @@ if (!parseAppId || !parseClientKey) {
 
 const app = createApp(App)
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes
 })
 
