@@ -14,47 +14,35 @@ import { useRouter } from 'vue-router'
 import { inject, type Ref } from 'vue'
 import type { Room } from '@/types/objects'
 
-const PARSE_URL = import.meta.env.VITE_PARSE_URL
-const PARSE_APP_ID = import.meta.env.VITE_PARSE_APPLICATION_ID
-const PARSE_CLIENT_KEY = import.meta.env.VITE_PARSE_CLIENT_KEY
-
+const Parse = inject('ParseClient') as any
 const router = useRouter()
 
-const playerId = inject('playerId') as Ref<string | undefined, string | undefined>
+const playerId = inject('playerId') as Ref<string | undefined>
 
 async function handleCreate() {
   if (playerId.value) {
-    const room = await createRoomWithPlayer(playerId.value)
-    router.push('/room/' + room.code)
+    try {
+      const room = await createRoomWithPlayer(playerId.value)
+      router.push('/room/' + room.code)
+    } catch (error) {
+      console.error('Failed to create room:', error)
+    }
+  } else {
+    console.error('Player ID is missing.')
+  }
+}
+
+async function createRoomWithPlayer(playerId: string): Promise<Room> {
+  try {
+    const result = await Parse.Cloud.run('createRoomWithPlayer', { playerId })
+    return result as Room
+  } catch (error) {
+    console.error('Error calling createRoomWithPlayer:', error)
+    throw error
   }
 }
 
 function navigateToJoin() {
   router.push('/join')
-}
-
-async function createRoomWithPlayer(playerId: string): Promise<Room> {
-  const url = `${PARSE_URL}/functions/createRoomWithPlayer`
-
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'X-Parse-Application-Id': PARSE_APP_ID,
-        'X-Parse-Client-Key': PARSE_CLIENT_KEY,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ playerId })
-    })
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`)
-    }
-
-    const data = await response.json()
-    return data.result as Room
-  } catch (error) {
-    throw new Error(`Error calling cloud function: ${error}`)
-  }
 }
 </script>
