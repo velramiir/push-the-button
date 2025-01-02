@@ -11,12 +11,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import Avatar from 'vue-boring-avatars'
 
-const route = useRoute()
-const roomCode = computed(() => route.params.roomCode)
+const PARSE_URL = import.meta.env.VITE_PARSE_URL
+const PARSE_APP_ID = import.meta.env.VITE_PARSE_APPLICATION_ID
+const PARSE_CLIENT_KEY = import.meta.env.VITE_PARSE_CLIENT_KEY
 
+const route = useRoute()
+const roomCode = computed(() => route.params.roomCode as string)
+
+const playerId = inject('playerId') as Ref<string | undefined, string | undefined>
 const players = []
 </script>

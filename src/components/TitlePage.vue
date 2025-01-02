@@ -11,8 +11,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
-import { storageKey } from '@/storage-keys'
+import { inject, type Ref } from 'vue'
 import type { Room } from '@/types/objects'
 
 const PARSE_URL = import.meta.env.VITE_PARSE_URL
@@ -21,14 +20,9 @@ const PARSE_CLIENT_KEY = import.meta.env.VITE_PARSE_CLIENT_KEY
 
 const router = useRouter()
 
-const playerId = ref(getPlayerId())
-
-function getPlayerId(): string | undefined {
-  return localStorage.getItem(storageKey.playerId) ?? undefined
-}
+const playerId = inject('playerId') as Ref<string | undefined, string | undefined>
 
 async function handleCreate() {
-  console.log('create')
   if (playerId.value) {
     const room = await createRoomWithPlayer(playerId.value)
     router.push('/room/' + room.code)
