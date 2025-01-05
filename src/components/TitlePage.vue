@@ -13,8 +13,8 @@
 import { useRouter } from 'vue-router'
 import { inject, type Ref } from 'vue'
 import type { Room } from '@/types/objects'
+import Parse from 'parse/dist/parse.min.js'
 
-const Parse = inject('ParseClient') as any
 const router = useRouter()
 
 const playerId = inject('playerId') as Ref<string | undefined>
