@@ -34,7 +34,6 @@ function getPlayerId(): string | undefined {
 }
 const playerId = ref(getPlayerId())
 
-app.provide('ParseClient', Parse)
 app.provide('playerId', playerId)
 app.use(router)
 app.use(naiveUi)
