@@ -1,49 +1,25 @@
+interface DomainObject {
+  id: string
+  createdAt: Date
+  updatedAt: Date
+}
+
 /**
  * Represents a player in the application.
  */
-export interface Player {
-  /**
-   * Unique identifier for the player.
-   */
-  id: string
-
+export interface Player extends DomainObject {
   /**
    * Name of the player, not unique across the application.
    */
   name: string
-
-  /**
-   * Date when the player was created.
-   */
-  createdAt: Date
-
-  /**
-   * Date when the player was last updated.
-   */
-  updatedAt: Date
 }
 
 /**
  * Represents a room in the application.
  */
-export interface Room {
-  /**
-   * Unique identifier for the room.
-   */
-  id: string
-
+export interface Room extends DomainObject {
   /**
    * Randomly generated 4-character code for the room.
    */
   code: string
-
-  /**
-   * Date when the room was created.
-   */
-  createdAt: Date
-
-  /**
-   * Date when the room was last updated.
-   */
-  updatedAt: Date
 }
