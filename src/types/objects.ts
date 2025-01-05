@@ -8,9 +8,9 @@ export interface Player {
   id: string
 
   /**
-   * Username of the player, unique across the application.
+   * Name of the player, not unique across the application.
    */
-  username: string
+  name: string
 
   /**
    * Date when the player was created.
