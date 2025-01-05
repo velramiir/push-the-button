@@ -12,6 +12,11 @@ export interface Player extends DomainObject {
    * Name of the player, not unique across the application.
    */
   name: string
+
+  /**
+   * The room that the player is assigned to.
+   */
+  room: Room | null
 }
 
 /**
